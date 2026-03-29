@@ -84,7 +84,7 @@ func _fill_music_buffer() -> void:
 		var bass_freq := BASS[_current_bass[note_idx % _current_bass.size()]]
 
 		# Soft sine wave melody with envelope
-		var env := _note_envelope(fmod(t, _note_duration), _note_duration)
+		var env: float = _note_envelope(fmod(t, _note_duration), _note_duration)
 		var melody_sample := sin(t * freq * TAU) * 0.15 * env
 
 		# Warm bass pad
@@ -164,7 +164,7 @@ func _gen_burn_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.4)
+		var env: float = maxf(0.0, 1.0 - t / 0.4)
 		s[i] = (sin(t * 220.0 * TAU) * 0.3 + randf_range(-0.2, 0.2)) * env
 	return s
 
@@ -174,7 +174,7 @@ func _gen_pop_sfx(freq: float) -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.15)
+		var env: float = maxf(0.0, 1.0 - t / 0.15)
 		var f := freq * (1.0 + (0.15 - t) * 3.0)
 		s[i] = sin(t * f * TAU) * 0.4 * env * env
 	return s
@@ -185,7 +185,7 @@ func _gen_click_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.05)
+		var env: float = maxf(0.0, 1.0 - t / 0.05)
 		s[i] = sin(t * 800.0 * TAU) * 0.3 * env
 	return s
 
@@ -204,7 +204,7 @@ func _gen_coin_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.3)
+		var env: float = maxf(0.0, 1.0 - t / 0.3)
 		var f := 880.0 if t < 0.1 else 1320.0
 		s[i] = sin(t * f * TAU) * 0.25 * env
 	return s
@@ -215,7 +215,7 @@ func _gen_buzz_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.2)
+		var env: float = maxf(0.0, 1.0 - t / 0.2)
 		s[i] = (sin(t * 120.0 * TAU) * 0.5 + sin(t * 180.0 * TAU) * 0.3) * env * 0.4
 	return s
 
@@ -225,7 +225,7 @@ func _gen_whoosh_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := sin(t / 0.5 * PI)
+		var env: float = sin(t / 0.5 * PI)
 		s[i] = randf_range(-0.15, 0.15) * env
 	return s
 
@@ -235,7 +235,7 @@ func _gen_explosion_sfx() -> PackedFloat32Array:
 	s.resize(len_samples)
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
-		var env := max(0.0, 1.0 - t / 0.8) * max(0.0, 1.0 - t / 0.8)
+		var env: float = maxf(0.0, 1.0 - t / 0.8) * maxf(0.0, 1.0 - t / 0.8)
 		var low := sin(t * 60.0 * TAU) * 0.5
 		var noise := randf_range(-0.4, 0.4)
 		s[i] = (low + noise) * env * 0.5
@@ -245,7 +245,7 @@ func _gen_chime_sfx() -> PackedFloat32Array:
 	var s := PackedFloat32Array()
 	var len_samples := int(_sample_rate * 0.6)
 	s.resize(len_samples)
-	var notes := [523.3, 659.3, 784.0]  # C5, E5, G5
+	var notes: Array[float] = [523.3, 659.3, 784.0]  # C5, E5, G5
 	for i in range(len_samples):
 		var t := float(i) / _sample_rate
 		var val := 0.0
@@ -253,7 +253,7 @@ func _gen_chime_sfx() -> PackedFloat32Array:
 			var delay := n_idx * 0.12
 			if t > delay:
 				var lt := t - delay
-				var env := max(0.0, 1.0 - lt / 0.4)
+				var env: float = maxf(0.0, 1.0 - lt / 0.4)
 				val += sin(lt * notes[n_idx] * TAU) * 0.15 * env
 		s[i] = val
 	return s

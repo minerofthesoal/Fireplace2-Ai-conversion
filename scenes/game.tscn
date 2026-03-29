@@ -180,6 +180,10 @@ visibility_rect = Rect2(-400, -20, 800, 600)
 wait_time = 6.0
 autostart = false
 
+[node name="WindTimer" type="Timer" parent="RainSystem"]
+wait_time = 15.0
+autostart = false
+
 [node name="Tutorial" type="Node2D" parent="."]
 script = ExtResource("13")
 
@@ -275,12 +279,39 @@ offset_bottom = 440.0
 visible = false
 script = ExtResource("14")
 
+[node name="ComboLabel" type="Label" parent="UI"]
+offset_left = 250.0
+offset_top = 36.0
+offset_right = 400.0
+offset_bottom = 56.0
+text = ""
+horizontal_alignment = 1
+visible = false
+
+[node name="WindLabel" type="Label" parent="UI"]
+offset_left = 250.0
+offset_top = 130.0
+offset_right = 400.0
+offset_bottom = 155.0
+text = "WIND GUST!"
+horizontal_alignment = 1
+visible = false
+
+[node name="SaveIndicator" type="Label" parent="UI"]
+offset_left = 550.0
+offset_top = 36.0
+offset_right = 635.0
+offset_bottom = 56.0
+text = "Saved"
+horizontal_alignment = 2
+visible = false
+
 [node name="ShopHint" type="Label" parent="UI"]
 offset_left = 10.0
 offset_top = 452.0
 offset_right = 300.0
 offset_bottom = 475.0
-text = "Click bottom-left (no logs) or B for Shop"
+text = "Click bottom-left (no logs) or B/Esc for Shop"
 
 [node name="ControlsHint" type="Label" parent="UI"]
 offset_left = 340.0

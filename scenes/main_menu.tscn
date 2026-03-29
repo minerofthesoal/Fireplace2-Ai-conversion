@@ -39,16 +39,16 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -64.0
-offset_top = -220.0
+offset_top = -240.0
 offset_right = 64.0
-offset_bottom = -92.0
+offset_bottom = -112.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2")
 stretch_mode = 5
 
 [node name="FireDecor" type="GPUParticles2D" parent="."]
-position = Vector2(320, 180)
+position = Vector2(320, 160)
 amount = 20
 lifetime = 1.0
 process_material = SubResource("ParticleProcessMaterial_decor")
@@ -62,9 +62,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -140.0
-offset_top = -60.0
+offset_top = -80.0
 offset_right = 140.0
-offset_bottom = 160.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
@@ -81,12 +81,18 @@ horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 12)
+
+[node name="ContinueBtn" type="Button" parent="VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 44)
+text = "Continue"
+visible = false
 
 [node name="PlayBtn" type="Button" parent="VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(200, 44)
-text = "Play"
+text = "New Game"
 
 [node name="OptionsBtn" type="Button" parent="VBox"]
 layout_mode = 2
@@ -97,6 +103,22 @@ text = "Options"
 layout_mode = 2
 custom_minimum_size = Vector2(200, 44)
 text = "Quit"
+
+[node name="Spacer2" type="Control" parent="VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 8)
+
+[node name="PrestigeLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+visible = false
+
+[node name="AchievementsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+visible = false
 
 [node name="VersionLabel" type="Label" parent="."]
 layout_mode = 1

@@ -1,7 +1,7 @@
 extends Node2D
 
 ## Fireplace 2 — Game Scene Controller
-## Wires together all sub-systems: fire, logs, rain, shop, endings, input, tutorial.
+## Wires together all sub-systems.
 
 const SF := 4.0
 const SCREEN_W := 640
@@ -20,17 +20,25 @@ const SCREEN_H := 480
 @onready var mode_label: Label = $UI/ModeLabel
 @onready var end_button: Sprite2D = $EndButton
 @onready var stats_label: Label = $UI/StatsLabel
+@onready var combo_label: Label = $UI/ComboLabel
+@onready var wind_label: Label = $UI/WindLabel
+@onready var save_indicator: Label = $UI/SaveIndicator
 
 var _endings: Node
-var _shop_open := false
-var _game_over_active := false
+var _shop_open: bool = false
+var _game_over_active: bool = false
 var _achievement_tween: Tween
+var _save_flash_tween: Tween
 
 func _ready() -> void:
 	theme = ThemeBuilder.build()
-	GameManager.reset_game()
 
-	# Endings system
+	# Try loading saved game
+	if not SaveManager.load_game():
+		GameManager.reset_game()
+	SaveManager.enter_game()
+
+	# Endings
 	_endings = preload("res://scripts/endings.gd").new()
 	_endings.setup(self)
 	_endings.ending_complete.connect(_on_ending_complete)
@@ -39,33 +47,48 @@ func _ready() -> void:
 	# Tutorial
 	tutorial_node.set_speech_label(speech_label)
 
-	# Connect input signals
+	# Input signals
 	input_mgr.grab_requested.connect(_on_grab)
 	input_mgr.release_requested.connect(_on_release)
 	input_mgr.shop_requested.connect(_on_shop_requested)
 
-	# Connect shop signals
+	# Shop signals
 	shop_ui.shop_closed.connect(_on_shop_closed)
 	shop_ui.item_purchased.connect(_on_item_purchased)
 
-	# Connect fire system
+	# Fire events
 	fire_system.fire_died.connect(_on_fire_died)
 
-	# Initialize
+	# Rain/wind events
+	rain_system.wind_started.connect(_on_wind_started)
+	rain_system.wind_ended.connect(_on_wind_ended)
+
+	# Achievement signal
+	GameManager.achievement_earned.connect(_on_achievement_earned)
+	GameManager.combo_changed.connect(_on_combo_changed)
+
+	# Initialize UI
 	end_button.visible = false
 	achievement_label.visible = false
 	mode_label.visible = false
 	speech_label.visible = false
+	combo_label.visible = false
+	wind_label.visible = false
+	save_indicator.visible = false
+
+	# Heat bar max
+	heat_bar.max_value = GameManager.get_fire_max()
 
 	# Start music
 	AudioManager.start_music()
 
-	# Give fire_zone to log_system after 1 frame (positions settle)
+	# Wire fire zone after positions settle
 	await get_tree().process_frame
 	log_system.set_fire_zone(fire_system.get_fire_zone_rect())
 
-	# Spawn first log
-	log_system.spawn_log(false)
+	# Spawn first log if fresh game
+	if GameManager.log_count == 0:
+		log_system.spawn_log(false)
 
 func _process(delta: float) -> void:
 	if _game_over_active:
@@ -73,21 +96,27 @@ func _process(delta: float) -> void:
 
 	GameManager.game_time += delta
 
-	# Pass cursor pos to log system for dragging
+	# Marathon achievement
+	if GameManager.game_time >= 600.0:
+		GameManager.try_achievement("marathon")
+
+	# Cursor to log system
 	log_system.drag_to(input_mgr.get_cursor_pos())
 
 	# Update UI
+	heat_bar.max_value = GameManager.get_fire_max()
 	heat_bar.value = GameManager.fire_level
 	score_label.text = "Score: %d" % GameManager.score
-	stats_label.text = "Logs burned: %d  |  Time: %s" % [
+	stats_label.text = "Logs: %d  |  Time: %s  |  Best combo: %d" % [
 		GameManager.total_logs_burned,
-		_format_time(GameManager.game_time)
+		_format_time(GameManager.game_time),
+		GameManager.combo_best,
 	]
 
-	# Tutorial check
+	# Tutorial
 	tutorial_node.check_interaction(input_mgr.get_cursor_pos())
 
-	# End button at 1325 score
+	# End button at 1325
 	if GameManager.score >= 1325 and not GameManager.end_button_visible:
 		GameManager.end_button_visible = true
 		end_button.visible = true
@@ -96,7 +125,7 @@ func _process(delta: float) -> void:
 		_show_achievement("END AVAILABLE", "Click the button to finish")
 
 # ═══════════════════════════════════════════════════════════
-# INPUT HANDLING
+# INPUT
 # ═══════════════════════════════════════════════════════════
 
 func _on_grab(cursor_pos: Vector2) -> void:
@@ -109,12 +138,12 @@ func _on_release(cursor_pos: Vector2) -> void:
 		return
 	log_system.release_all()
 
-	# Shop click (bottom-left, no logs)
+	# Shop click
 	if log_system.all_null() and cursor_pos.x < 40 * SF and cursor_pos.y > 100 * SF:
 		_open_shop()
 		return
 
-	# End button click
+	# End button
 	if GameManager.end_button_visible and end_button.visible:
 		if cursor_pos.distance_to(end_button.position) < 30 * SF:
 			_press_end_button()
@@ -124,9 +153,11 @@ func _on_shop_requested() -> void:
 		_open_shop()
 
 func _input(event: InputEvent) -> void:
-	# Toggle mode notification
 	if event.is_action_pressed("toggle_input_mode"):
 		_show_mode("D-Pad mode ON" if GameManager.use_dpad else "Mouse mode ON")
+	# Escape during gameplay = pause/shop
+	if event.is_action_pressed("ui_cancel") and not _shop_open and not _game_over_active:
+		_open_shop()
 
 # ═══════════════════════════════════════════════════════════
 # SHOP
@@ -139,10 +170,11 @@ func _open_shop() -> void:
 
 func _on_shop_closed() -> void:
 	_shop_open = false
+	SaveManager.save_game()
+	_flash_save()
 
 func _on_item_purchased(item_name: String) -> void:
 	_show_achievement(item_name, "Purchased!")
-	# If Buy Log was purchased, spawn it
 	if item_name == "Buy Log":
 		log_system.spawn_log(false)
 
@@ -154,6 +186,7 @@ func _press_end_button() -> void:
 	if _game_over_active:
 		return
 	_game_over_active = true
+	SaveManager.leave_game()
 	end_button.texture = preload("res://assets/sprites/bigButtonPress1.png")
 	AudioManager.play_sfx("button_click")
 	await get_tree().create_timer(0.15).timeout
@@ -162,6 +195,7 @@ func _press_end_button() -> void:
 
 func _on_ending_complete(won: bool, ending_name: String, final_score: int) -> void:
 	AudioManager.stop_music()
+	SaveManager.delete_save()
 	_show_game_over(won, ending_name, final_score)
 
 func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
@@ -172,7 +206,7 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	$UI.add_child(overlay)
 
 	var tween := create_tween()
-	tween.tween_property(overlay, "color", Color(0, 0, 0, 0.9), 1.5)
+	tween.tween_property(overlay, "color", Color(0, 0, 0, 0.92), 1.5)
 	await tween.finished
 
 	var result_vbox := VBoxContainer.new()
@@ -182,15 +216,15 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	$UI.add_child(result_vbox)
 
 	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 100)
+	spacer.custom_minimum_size = Vector2(0, 80)
 	result_vbox.add_child(spacer)
 
-	var result_title := Label.new()
-	result_title.text = "YOU WIN!" if won else "GAME OVER"
-	result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	result_title.add_theme_font_size_override("font_size", 40)
-	result_title.add_theme_color_override("font_color", Color.GOLD if won else Color.INDIAN_RED)
-	result_vbox.add_child(result_title)
+	var title := Label.new()
+	title.text = "YOU WIN!" if won else "GAME OVER"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 40)
+	title.add_theme_color_override("font_color", Color.GOLD if won else Color.INDIAN_RED)
+	result_vbox.add_child(title)
 
 	var ending_lbl := Label.new()
 	ending_lbl.text = "Ending: %s" % ending_name
@@ -204,18 +238,33 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	score_lbl.add_theme_font_size_override("font_size", 20)
 	result_vbox.add_child(score_lbl)
 
-	var stats_lbl := Label.new()
-	stats_lbl.text = "Logs burned: %d  |  Time: %s  |  Peak fire: %.1f" % [
+	var stats := Label.new()
+	stats.text = "Logs burned: %d  |  Time: %s  |  Peak fire: %.1f\nBest combo: %dx  |  Wind survived: %d  |  Prestige: x%d" % [
 		GameManager.total_logs_burned,
 		_format_time(GameManager.game_time),
-		GameManager.highest_fire_level
+		GameManager.highest_fire_level,
+		GameManager.combo_best,
+		GameManager.wind_events_survived,
+		GameManager.prestige_count,
 	]
-	stats_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stats_lbl.add_theme_font_size_override("font_size", 14)
-	result_vbox.add_child(stats_lbl)
+	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats.add_theme_font_size_override("font_size", 13)
+	result_vbox.add_child(stats)
+
+	# Achievements earned
+	if GameManager.achievements_unlocked.size() > 0:
+		var ach_lbl := Label.new()
+		ach_lbl.text = "Achievements: %d / %d" % [
+			GameManager.achievements_unlocked.size(),
+			GameManager.ACHIEVEMENTS.size()
+		]
+		ach_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ach_lbl.add_theme_font_size_override("font_size", 14)
+		ach_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+		result_vbox.add_child(ach_lbl)
 
 	var spacer2 := Control.new()
-	spacer2.custom_minimum_size = Vector2(0, 30)
+	spacer2.custom_minimum_size = Vector2(0, 20)
 	result_vbox.add_child(spacer2)
 
 	var btn_row := HBoxContainer.new()
@@ -244,18 +293,49 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	retry_btn.grab_focus()
 
 # ═══════════════════════════════════════════════════════════
-# FIRE EVENTS
+# WEATHER EVENTS
 # ═══════════════════════════════════════════════════════════
 
 func _on_fire_died() -> void:
 	Effects.smoke_puff(self, Vector2(320, 320))
 
+func _on_wind_started() -> void:
+	wind_label.text = "WIND GUST!"
+	wind_label.visible = true
+	wind_label.modulate = Color(1, 1, 1, 1)
+
+func _on_wind_ended() -> void:
+	var tw := create_tween()
+	tw.tween_property(wind_label, "modulate", Color(1, 1, 1, 0), 1.0)
+	tw.tween_callback(func(): wind_label.visible = false)
+
+# ═══════════════════════════════════════════════════════════
+# COMBO / ACHIEVEMENTS
+# ═══════════════════════════════════════════════════════════
+
+func _on_combo_changed(new_combo: int) -> void:
+	if new_combo >= 2:
+		combo_label.text = "COMBO x%d!" % new_combo
+		combo_label.visible = true
+		combo_label.modulate = Color(1, 1, 1, 1)
+		var tw := create_tween()
+		tw.tween_interval(2.0)
+		tw.tween_property(combo_label, "modulate", Color(1, 1, 1, 0), 0.5)
+	else:
+		combo_label.visible = false
+
+func _on_achievement_earned(id: String) -> void:
+	var ach_name: String = GameManager.get_achievement_name(id)
+	var ach_desc: String = GameManager.get_achievement_desc(id)
+	_show_achievement(ach_name, ach_desc)
+	AudioManager.play_sfx("achievement")
+
 # ═══════════════════════════════════════════════════════════
 # UI HELPERS
 # ═══════════════════════════════════════════════════════════
 
-func _show_achievement(title: String, desc: String) -> void:
-	achievement_label.text = "%s\n%s" % [title, desc]
+func _show_achievement(title_text: String, desc: String) -> void:
+	achievement_label.text = "%s\n%s" % [title_text, desc]
 	achievement_label.visible = true
 	achievement_label.modulate = Color(1, 1, 1, 0)
 	if _achievement_tween:
@@ -275,7 +355,18 @@ func _show_mode(text: String) -> void:
 	tw.tween_property(mode_label, "modulate", Color(1, 1, 1, 0), 0.5)
 	tw.tween_callback(func(): mode_label.visible = false)
 
+func _flash_save() -> void:
+	save_indicator.text = "Saved"
+	save_indicator.visible = true
+	save_indicator.modulate = Color.WHITE
+	if _save_flash_tween:
+		_save_flash_tween.kill()
+	_save_flash_tween = create_tween()
+	_save_flash_tween.tween_interval(1.0)
+	_save_flash_tween.tween_property(save_indicator, "modulate", Color(1, 1, 1, 0), 0.5)
+	_save_flash_tween.tween_callback(func(): save_indicator.visible = false)
+
 func _format_time(t: float) -> String:
-	var m := int(t) / 60
-	var s := int(t) % 60
+	var m: int = int(t) / 60
+	var s: int = int(t) % 60
 	return "%d:%02d" % [m, s]
