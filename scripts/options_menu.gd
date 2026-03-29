@@ -54,6 +54,7 @@ func _on_fullscreen_toggled(pressed: bool) -> void:
 
 func _on_back() -> void:
 	AudioManager.play_sfx("button_click")
+	SaveManager.save_settings()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func _update_labels() -> void:

@@ -1,7 +1,7 @@
 extends Node2D
 
 ## Fireplace 2 — Fire System
-## Manages fire decay, animation, and spark particles.
+## Fire decay, animation, sparks, and inferno achievement.
 
 signal fire_died
 signal fire_started
@@ -14,7 +14,7 @@ signal fire_started
 @onready var score_timer: Timer = $ScoreTimer
 @onready var spark_timer: Timer = $SparkTimer
 
-var _was_burning := false
+var _was_burning: bool = false
 
 func _ready() -> void:
 	fire_anim.visible = false
@@ -35,18 +35,22 @@ func _ready() -> void:
 func _on_decay_tick() -> void:
 	if GameManager.fire_level < 0.5:
 		return
-
 	GameManager.fire_tick += 1
-	var thresh := 80 if GameManager.upgrade_firebrick else 64
+	var thresh: int = 80 if GameManager.upgrade_firebrick else 64
 	if GameManager.fire_tick >= thresh:
-		var amount := 1.0
+		var amount: float = 1.0
 		if GameManager.raining:
 			if GameManager.upgrade_roofing:
-				pass  # full protection
+				pass
 			elif GameManager.upgrade_wind_guard:
-				amount += 0.5  # partial protection
+				amount += 0.5
 			else:
 				amount += 1.0
+		if GameManager.wind_active:
+			if GameManager.upgrade_wind_guard:
+				amount += 0.5
+			else:
+				amount += 1.5
 		GameManager.decay_fire(amount)
 		GameManager.fire_tick = 0
 
@@ -66,6 +70,10 @@ func _on_score_tick() -> void:
 		fire_particles.emitting = false
 		fireplace_sprite.texture = preload("res://assets/sprites/myImage1.png")
 
+	# Inferno achievement
+	if GameManager.fire_level >= GameManager.get_fire_max():
+		GameManager.try_achievement("inferno")
+
 func _ensure_fire_anim() -> void:
 	if GameManager.fire_anim_playing:
 		return
@@ -78,10 +86,7 @@ func _ensure_fire_anim() -> void:
 	fire_particles.emitting = true
 
 func _on_spark_tick() -> void:
-	if GameManager.fire_level > 0:
-		fire_particles.emitting = true
-	else:
-		fire_particles.emitting = false
+	fire_particles.emitting = GameManager.fire_level > 0
 
 func get_fire_zone_rect() -> Rect2:
 	return Rect2(wall_zone.global_position - Vector2(32, 32), Vector2(64, 64))
