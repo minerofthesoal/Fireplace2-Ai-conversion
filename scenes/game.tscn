@@ -1,54 +1,34 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene format=3 uid="uid://wumhdq8cje64"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/v2_background_0.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/fireplace_no_wood0.png" id="3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/myImage1.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/curreser.png" id="5"]
-[ext_resource type="Texture2D" path="res://assets/sprites/bigButtonPress0.png" id="6"]
-[ext_resource type="Texture2D" path="res://assets/sprites/spider.png" id="7"]
-[ext_resource type="Texture2D" path="res://assets/sprites/temps-i1.png" id="8"]
-[ext_resource type="Script" path="res://scripts/fire_system.gd" id="9"]
-[ext_resource type="Script" path="res://scripts/log_system.gd" id="10"]
-[ext_resource type="Script" path="res://scripts/rain_system.gd" id="11"]
-[ext_resource type="Script" path="res://scripts/input_manager.gd" id="12"]
-[ext_resource type="Script" path="res://scripts/tutorial.gd" id="13"]
-[ext_resource type="Script" path="res://scripts/shop_ui.gd" id="14"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_000.png" id="20"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_001.png" id="21"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_002.png" id="22"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_003.png" id="23"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_004.png" id="24"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_000.png" id="25"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_001.png" id="26"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_002.png" id="27"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_003.png" id="28"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_004.png" id="29"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_005.png" id="30"]
-[ext_resource type="Texture2D" path="res://assets/animations/fireplace0/frame_006.png" id="31"]
+[ext_resource type="Script" uid="uid://cpa2vvsx5lthp" path="res://scripts/main.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bqpofpqiukh3g" path="res://assets/sprites/v2_background_0.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bqqwhgbyr53q5" path="res://assets/sprites/fireplace_no_wood0.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://jir6rplcmu6q" path="res://assets/sprites/myImage1.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://b2nhx4r822ady" path="res://assets/sprites/curreser.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://b4hh015hrof0x" path="res://assets/sprites/bigButtonPress0.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://clbnqskqdni0h" path="res://assets/sprites/spider.png" id="7"]
+[ext_resource type="Texture2D" uid="uid://bax4bxejpl0md" path="res://assets/sprites/temps-i1.png" id="8"]
+[ext_resource type="Script" uid="uid://bqpdu65qkfpci" path="res://scripts/fire_system.gd" id="9"]
+[ext_resource type="Script" uid="uid://ce3arlq1ynqex" path="res://scripts/log_system.gd" id="10"]
+[ext_resource type="Script" uid="uid://d2lkbmateg1ay" path="res://scripts/rain_system.gd" id="11"]
+[ext_resource type="Script" uid="uid://d4bmd008vshlh" path="res://scripts/input_manager.gd" id="12"]
+[ext_resource type="Script" uid="uid://bgavpwpag68a" path="res://scripts/tutorial.gd" id="13"]
+[ext_resource type="Script" uid="uid://doebkpaavullk" path="res://scripts/shop_ui.gd" id="14"]
+[ext_resource type="Texture2D" uid="uid://5cotex5uwrer" path="res://assets/animations/fireplace/frame_000.png" id="20"]
+[ext_resource type="Texture2D" uid="uid://gltndd87kvyd" path="res://assets/animations/fireplace/frame_001.png" id="21"]
+[ext_resource type="Texture2D" uid="uid://vypdkvpcobl3" path="res://assets/animations/fireplace/frame_002.png" id="22"]
+[ext_resource type="Texture2D" uid="uid://fqeycbpkvnxh" path="res://assets/animations/fireplace/frame_003.png" id="23"]
+[ext_resource type="Texture2D" uid="uid://bx4crdmxggg6p" path="res://assets/animations/fireplace/frame_004.png" id="24"]
+[ext_resource type="Texture2D" uid="uid://cpdhjj13b0idm" path="res://assets/animations/fireplace0/frame_000.png" id="25"]
+[ext_resource type="Texture2D" uid="uid://t6py8tkgl0i3" path="res://assets/animations/fireplace0/frame_001.png" id="26"]
+[ext_resource type="Texture2D" uid="uid://b3uyda3yb1sq8" path="res://assets/animations/fireplace0/frame_002.png" id="27"]
+[ext_resource type="Texture2D" uid="uid://b3cpn27v81m0" path="res://assets/animations/fireplace0/frame_003.png" id="28"]
+[ext_resource type="Texture2D" uid="uid://cxnpnail5huvr" path="res://assets/animations/fireplace0/frame_004.png" id="29"]
+[ext_resource type="Texture2D" uid="uid://bl3as0tkf3bxg" path="res://assets/animations/fireplace0/frame_005.png" id="30"]
+[ext_resource type="Texture2D" uid="uid://dhedlnyhw7nt4" path="res://assets/animations/fireplace0/frame_006.png" id="31"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fire"]
 animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("20")
-}, {
-"duration": 1.0,
-"texture": ExtResource("21")
-}, {
-"duration": 1.0,
-"texture": ExtResource("22")
-}, {
-"duration": 1.0,
-"texture": ExtResource("23")
-}, {
-"duration": 1.0,
-"texture": ExtResource("24")
-}],
-"loop": true,
-"name": &"fireplace_normal",
-"speed": 2.5
-}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("25")
@@ -74,6 +54,26 @@ animations = [{
 "loop": true,
 "name": &"fireplace_demon",
 "speed": 1.25
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("20")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24")
+}],
+"loop": true,
+"name": &"fireplace_normal",
+"speed": 2.5
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
@@ -97,223 +97,207 @@ initial_velocity_max = 500.0
 gravity = Vector3(0, 200, 0)
 color = Color(0.53, 0.95, 1, 0.7)
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" unique_id=2046556042]
 script = ExtResource("1")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Background" type="Sprite2D" parent="." unique_id=294531397]
 position = Vector2(320, 240)
 texture = ExtResource("2")
-centered = true
 
-[node name="FireplaceBase" type="Sprite2D" parent="."]
+[node name="FireplaceBase" type="Sprite2D" parent="." unique_id=1397155550]
 position = Vector2(328, 348)
+rotation = 1.5707964
 texture = ExtResource("3")
-centered = true
 
-[node name="EndButton" type="Sprite2D" parent="."]
+[node name="EndButton" type="Sprite2D" parent="." unique_id=893945849]
+visible = false
 position = Vector2(92, 204)
 scale = Vector2(0.375, 0.375)
 texture = ExtResource("6")
-visible = false
-centered = true
 
-[node name="FireSystem" type="Node2D" parent="."]
+[node name="FireSystem" type="Node2D" parent="." unique_id=1723800105]
 script = ExtResource("9")
 
-[node name="FireplaceSprite" type="Sprite2D" parent="FireSystem"]
+[node name="FireplaceSprite" type="Sprite2D" parent="FireSystem" unique_id=1956699825]
 position = Vector2(328, 368)
+rotation = 1.5707964
 scale = Vector2(1.32, 1.32)
 texture = ExtResource("4")
-centered = true
 
-[node name="FireAnim" type="AnimatedSprite2D" parent="FireSystem"]
+[node name="FireAnim" type="AnimatedSprite2D" parent="FireSystem" unique_id=1514065420]
+visible = false
 position = Vector2(328, 328)
 scale = Vector2(1.69, 1.69)
 sprite_frames = SubResource("SpriteFrames_fire")
-visible = false
+animation = &"fireplace_normal"
 
-[node name="WallZone" type="Area2D" parent="FireSystem"]
+[node name="WallZone" type="Area2D" parent="FireSystem" unique_id=396247687]
 position = Vector2(320, 348)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FireSystem/WallZone"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FireSystem/WallZone" unique_id=714264874]
 shape = SubResource("RectangleShape2D_wall")
 
-[node name="FireParticles" type="GPUParticles2D" parent="FireSystem"]
+[node name="FireParticles" type="GPUParticles2D" parent="FireSystem" unique_id=2088340918]
 position = Vector2(312, 328)
+emitting = false
 amount = 15
 lifetime = 0.8
-process_material = SubResource("ParticleProcessMaterial_fire")
-emitting = false
 visibility_rect = Rect2(-60, -100, 120, 120)
+process_material = SubResource("ParticleProcessMaterial_fire")
 
-[node name="DecayTimer" type="Timer" parent="FireSystem"]
+[node name="DecayTimer" type="Timer" parent="FireSystem" unique_id=1466327548]
 wait_time = 0.25
-autostart = false
 
-[node name="ScoreTimer" type="Timer" parent="FireSystem"]
+[node name="ScoreTimer" type="Timer" parent="FireSystem" unique_id=313925789]
 wait_time = 0.05
-autostart = false
 
-[node name="SparkTimer" type="Timer" parent="FireSystem"]
+[node name="SparkTimer" type="Timer" parent="FireSystem" unique_id=968027978]
 wait_time = 0.25
-autostart = false
 
-[node name="LogSystem" type="Node2D" parent="."]
+[node name="LogSystem" type="Node2D" parent="." unique_id=1289284001]
 script = ExtResource("10")
 
-[node name="SpawnTimer" type="Timer" parent="LogSystem"]
+[node name="SpawnTimer" type="Timer" parent="LogSystem" unique_id=1032401143]
 wait_time = 2.65
-autostart = false
 
-[node name="RainSystem" type="Node2D" parent="."]
+[node name="RainSystem" type="Node2D" parent="." unique_id=928726836]
 script = ExtResource("11")
 
-[node name="RainParticles" type="GPUParticles2D" parent="RainSystem"]
+[node name="RainParticles" type="GPUParticles2D" parent="RainSystem" unique_id=1536239775]
 position = Vector2(320, -20)
+emitting = false
 amount = 80
 lifetime = 1.5
-process_material = SubResource("ParticleProcessMaterial_rain")
-emitting = false
 visibility_rect = Rect2(-400, -20, 800, 600)
+process_material = SubResource("ParticleProcessMaterial_rain")
 
-[node name="ToggleTimer" type="Timer" parent="RainSystem"]
+[node name="ToggleTimer" type="Timer" parent="RainSystem" unique_id=1065218158]
 wait_time = 6.0
-autostart = false
 
-[node name="WindTimer" type="Timer" parent="RainSystem"]
+[node name="WindTimer" type="Timer" parent="RainSystem" unique_id=614486951]
 wait_time = 15.0
-autostart = false
 
-[node name="Tutorial" type="Node2D" parent="."]
+[node name="Tutorial" type="Node2D" parent="." unique_id=1399138871]
 script = ExtResource("13")
 
-[node name="SpiderSprite" type="Sprite2D" parent="Tutorial"]
+[node name="SpiderSprite" type="Sprite2D" parent="Tutorial" unique_id=1358853650]
 position = Vector2(188, 132)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("7")
-centered = true
 
-[node name="TempIcon" type="Sprite2D" parent="Tutorial"]
+[node name="TempIcon" type="Sprite2D" parent="Tutorial" unique_id=923745009]
 position = Vector2(188, 132)
 scale = Vector2(0.75, 0.75)
 texture = ExtResource("8")
-centered = true
 
-[node name="InputManager" type="Node2D" parent="."]
+[node name="InputManager" type="Node2D" parent="." unique_id=424422471]
 script = ExtResource("12")
 
-[node name="Cursor" type="Sprite2D" parent="InputManager"]
+[node name="Cursor" type="Sprite2D" parent="InputManager" unique_id=572706163]
+z_index = 90
 position = Vector2(320, 240)
 texture = ExtResource("5")
-centered = true
-z_index = 90
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=623718306]
 
-[node name="HeatBar" type="ProgressBar" parent="UI"]
+[node name="HeatBar" type="ProgressBar" parent="UI" unique_id=1020850577]
 offset_left = 20.0
 offset_top = 8.0
 offset_right = 140.0
 offset_bottom = 32.0
 max_value = 5.0
-value = 0.0
 show_percentage = false
 
-[node name="HeatLabel" type="Label" parent="UI"]
+[node name="HeatLabel" type="Label" parent="UI" unique_id=1110344813]
 offset_left = 8.0
 offset_top = 10.0
 offset_right = 20.0
 offset_bottom = 30.0
 text = "H"
 
-[node name="ScoreLabel" type="Label" parent="UI"]
+[node name="ScoreLabel" type="Label" parent="UI" unique_id=37762999]
 offset_left = 20.0
 offset_top = 36.0
 offset_right = 200.0
 offset_bottom = 56.0
 text = "Score: 0"
 
-[node name="StatsLabel" type="Label" parent="UI"]
+[node name="StatsLabel" type="Label" parent="UI" unique_id=1072058892]
 offset_left = 400.0
 offset_top = 8.0
 offset_right = 635.0
 offset_bottom = 28.0
-text = ""
 horizontal_alignment = 2
 
-[node name="SpeechBubble" type="Label" parent="UI"]
+[node name="SpeechBubble" type="Label" parent="UI" unique_id=1546209241]
+visible = false
 offset_left = 40.0
 offset_top = 380.0
 offset_right = 600.0
 offset_bottom = 460.0
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
-visible = false
 
-[node name="AchievementLabel" type="Label" parent="UI"]
+[node name="AchievementLabel" type="Label" parent="UI" unique_id=1312687180]
+visible = false
 offset_left = 180.0
 offset_top = 60.0
 offset_right = 460.0
 offset_bottom = 120.0
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
 
-[node name="ModeLabel" type="Label" parent="UI"]
+[node name="ModeLabel" type="Label" parent="UI" unique_id=1640010745]
+visible = false
 offset_left = 220.0
 offset_top = 8.0
 offset_right = 420.0
 offset_bottom = 32.0
-text = ""
 horizontal_alignment = 1
-visible = false
 
-[node name="ShopUI" type="PanelContainer" parent="UI"]
+[node name="ShopUI" type="PanelContainer" parent="UI" unique_id=1763310928]
+visible = false
 offset_left = 120.0
 offset_top = 40.0
 offset_right = 520.0
 offset_bottom = 440.0
-visible = false
 script = ExtResource("14")
 
-[node name="ComboLabel" type="Label" parent="UI"]
+[node name="ComboLabel" type="Label" parent="UI" unique_id=1012894028]
+visible = false
 offset_left = 250.0
 offset_top = 36.0
 offset_right = 400.0
 offset_bottom = 56.0
-text = ""
 horizontal_alignment = 1
-visible = false
 
-[node name="WindLabel" type="Label" parent="UI"]
+[node name="WindLabel" type="Label" parent="UI" unique_id=705591497]
+visible = false
 offset_left = 250.0
 offset_top = 130.0
 offset_right = 400.0
 offset_bottom = 155.0
 text = "WIND GUST!"
 horizontal_alignment = 1
-visible = false
 
-[node name="SaveIndicator" type="Label" parent="UI"]
+[node name="SaveIndicator" type="Label" parent="UI" unique_id=1791069670]
+visible = false
 offset_left = 550.0
 offset_top = 36.0
 offset_right = 635.0
 offset_bottom = 56.0
 text = "Saved"
 horizontal_alignment = 2
-visible = false
 
-[node name="ShopHint" type="Label" parent="UI"]
+[node name="ShopHint" type="Label" parent="UI" unique_id=1350239848]
 offset_left = 10.0
 offset_top = 452.0
 offset_right = 300.0
 offset_bottom = 475.0
 text = "Click bottom-left (no logs) or B/Esc for Shop"
 
-[node name="ControlsHint" type="Label" parent="UI"]
+[node name="ControlsHint" type="Label" parent="UI" unique_id=462187553]
 offset_left = 340.0
 offset_top = 452.0
 offset_right = 635.0

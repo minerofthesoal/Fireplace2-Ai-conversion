@@ -31,8 +31,8 @@ var _achievement_tween: Tween
 var _save_flash_tween: Tween
 
 func _ready() -> void:
-	theme = ThemeBuilder.build()
-
+	ThemeBuilder.build()
+ 
 	# Try loading saved game
 	if not SaveManager.load_game():
 		GameManager.reset_game()
