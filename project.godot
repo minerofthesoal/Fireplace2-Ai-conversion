@@ -8,13 +8,16 @@ config_version=5
 
 config/name="Fireplace 2"
 config/description="A full new game based off of the first game, fireplace, now with more fun gameplay"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.2")
 config/icon="res://assets/sprites/fireplace_1.png"
 
 [autoload]
 
 GameManager="*res://scripts/game_manager.gd"
+AudioManager="*res://scripts/audio_manager.gd"
+ThemeBuilder="*res://scripts/theme_builder.gd"
+Effects="*res://scripts/effects.gd"
 
 [display]
 
