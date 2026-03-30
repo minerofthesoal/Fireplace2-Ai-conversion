@@ -34,8 +34,12 @@ var _achievement_tween: Tween
 var _save_flash_tween: Tween
 
 func _ready() -> void:
-	ThemeBuilder.build()
- 
+	# Apply theme to all UI Control children
+	var ui_theme: Theme = ThemeBuilder.build()
+	for child in $UI.get_children():
+		if child is Control:
+			child.theme = ui_theme
+
 	# Try loading saved game
 	if not SaveManager.load_game():
 		GameManager.reset_game()

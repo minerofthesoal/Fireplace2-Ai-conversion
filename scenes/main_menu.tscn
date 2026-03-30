@@ -46,7 +46,6 @@ offset_right = 80.0
 offset_bottom = -70.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 1.5707964
 texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 5

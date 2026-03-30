@@ -33,36 +33,6 @@
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("25")
-}, {
-"duration": 1.0,
-"texture": ExtResource("26")
-}, {
-"duration": 1.0,
-"texture": ExtResource("27")
-}, {
-"duration": 1.0,
-"texture": ExtResource("28")
-}, {
-"duration": 1.0,
-"texture": ExtResource("24")
-}],
-"loop": true,
-"name": &"fireplace_normal",
-"speed": 4.0
-}, {
-"duration": 1.0,
-"texture": ExtResource("30")
-}, {
-"duration": 1.0,
-"texture": ExtResource("31")
-}],
-"loop": true,
-"name": &"fireplace_demon",
-"speed": 1.25
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": ExtResource("20")
 }, {
 "duration": 1.0,
@@ -76,6 +46,32 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("24")
+}],
+"loop": true,
+"name": &"fireplace_normal",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("25")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31")
 }],
 "loop": true,
 "name": &"fireplace_demon",
@@ -177,7 +173,6 @@ lifetime = 1.2
 process_material = SubResource("ParticleProcessMaterial_rain")
 emitting = false
 visibility_rect = Rect2(-400, -20, 800, 600)
-process_material = SubResource("ParticleProcessMaterial_rain")
 
 [node name="ToggleTimer" type="Timer" parent="RainSystem" unique_id=1065218158]
 wait_time = 6.0
