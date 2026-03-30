@@ -184,12 +184,10 @@ func _auto_feed_log() -> void:
 
 func _on_spawn_tick() -> void:
 	var can_spawn: bool = GameManager.log_count < GameManager.get_log_cap() \
-		and GameManager.fire_level > 0 \
 		and not any_grabbed()
 
 	if not can_spawn:
-		if GameManager.fire_level > 0:
-			GameManager.pity += 1
+		GameManager.pity += 1
 		return
 
 	# Normal log

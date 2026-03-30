@@ -11,20 +11,21 @@ signal tutorial_complete
 
 var _running := false
 var _speech_label: Label
-var _spider_bob_time: float = 0.0
-var _spider_base_pos: Vector2
+var _spider_web: Node2D  # Reference to SpiderWeb node
 
 func _ready() -> void:
-	_spider_base_pos = spider_sprite.position
 	temp_icon.visible = false
 
 func set_speech_label(lbl: Label) -> void:
 	_speech_label = lbl
 
-func _process(delta: float) -> void:
-	# Gentle bobbing animation for spider
-	_spider_bob_time += delta
-	spider_sprite.position.y = _spider_base_pos.y + sin(_spider_bob_time * 2.0) * 4.0
+func set_spider_web(web: Node2D) -> void:
+	_spider_web = web
+
+func _process(_delta: float) -> void:
+	# Spider follows the end of the web
+	if _spider_web and _spider_web.has_method("get_end_position"):
+		spider_sprite.global_position = _spider_web.get_end_position()
 
 func check_interaction(cursor_pos: Vector2) -> void:
 	if _running or _speech_label == null:

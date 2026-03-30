@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/outside.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/outside_bg.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/chop_log.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/axe_basic.png" id="4"]
+
+[node name="Outside" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(320, 240)
+texture = ExtResource("2")
+
+[node name="ChopArea" type="Node2D" parent="."]
+position = Vector2(320, 280)
+
+[node name="LogSprite" type="Sprite2D" parent="ChopArea"]
+position = Vector2(0, 30)
+scale = Vector2(4.0, 4.0)
+texture = ExtResource("3")
+
+[node name="AxeSprite" type="Sprite2D" parent="ChopArea"]
+position = Vector2(60, -20)
+scale = Vector2(3.0, 3.0)
+rotation = -0.785
+texture = ExtResource("4")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="PanelContainer" parent="UI"]
+offset_left = 140.0
+offset_top = 20.0
+offset_right = 500.0
+offset_bottom = 200.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/Panel"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="UI/Panel/VBox"]
+layout_mode = 2
+text = "~ Log Chopping ~"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="UI/Panel/VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+
+[node name="LogHP" type="ProgressBar" parent="UI/Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 20)
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="ChopBtn" type="Button" parent="UI/Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 44)
+text = "CHOP! (Space/A)"
+
+[node name="SellBtn" type="Button" parent="UI/Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+text = "Sell Logs"
+
+[node name="NavLeft" type="Button" parent="UI"]
+offset_left = 10.0
+offset_top = 220.0
+offset_right = 50.0
+offset_bottom = 260.0
+text = "<"
+
+[node name="NavRight" type="Button" parent="UI"]
+offset_left = 590.0
+offset_top = 220.0
+offset_right = 630.0
+offset_bottom = 260.0
+text = ">"
+
+[node name="RoomLabel" type="Label" parent="UI"]
+offset_left = 220.0
+offset_top = 460.0
+offset_right = 420.0
+offset_bottom = 480.0
+text = "Outside"
+horizontal_alignment = 1
+
+[node name="CoinLabel" type="Label" parent="UI"]
+offset_left = 440.0
+offset_top = 460.0
+offset_right = 540.0
+offset_bottom = 480.0
+text = "Coins: 0"
+horizontal_alignment = 2

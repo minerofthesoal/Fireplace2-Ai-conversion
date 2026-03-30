@@ -88,6 +88,32 @@ const ACHIEVEMENTS := {
 	"secret_finder":  {"name": "Secret Finder",  "desc": "Discover the Konami code"},
 }
 
+# ── Rooms ──
+enum Room { LIVING_ROOM, BEDROOM, OUTSIDE }
+var current_room: int = Room.LIVING_ROOM
+
+# ── Chopping / Economy ──
+var coins: int = 0
+var chopped_logs: int = 0         # Logs player has chopped (sellable)
+var current_tool: int = 0          # 0=basic, 1=steel, 2=gold
+var chop_power: float = 1.0       # Damage per chop
+var tool_names: Array[String] = ["Basic Axe", "Steel Axe", "Gold Axe"]
+var tool_costs: Array[int] = [0, 50, 150]
+var tool_powers: Array[float] = [1.0, 2.0, 4.0]
+var sell_price_per_log: int = 5    # Coins per chopped log sold
+var sleep_bonus_active: bool = false
+var sleep_cooldown: float = 0.0    # Time until can sleep again
+const SLEEP_COOLDOWN_MAX: float = 120.0  # 2 minutes
+
+# ── Story ──
+var story_stage: int = 0  # 0=intro, 1=met spider, 2=explored rooms, 3=endgame
+const STORY_LINES: Array[String] = [
+	"A cold winter night... Your fireplace is all that stands between you and the frost.",
+	"The spider seems friendly. It's been watching over this old house for years.",
+	"You've found more rooms in this old cabin. There's work to be done everywhere.",
+	"The fire burns bright. This place feels like home again.",
+]
+
 # ── Settings (persisted across scenes) ──
 var master_volume: float = 0.8
 var sfx_volume: float = 1.0
@@ -99,13 +125,15 @@ var combo_sequence: Array[String] = []
 const KONAMI: Array[String] = ["down","down","up","up","left","right","left","right","b","a"]
 
 func _process(delta: float) -> void:
-	# Combo decay
+	# Gradual combo decay — lose 1 combo per tick after window expires
 	if combo_count > 0:
 		combo_timer += delta
 		var window: float = COMBO_WINDOW_MASTER if upgrade_combo_master else COMBO_WINDOW
 		if combo_timer >= window:
-			combo_count = 0
-			combo_timer = 0.0
+			combo_count -= 1
+			combo_timer = window - 1.0  # Next decay in 1 second
+			if combo_timer < 0.0:
+				combo_timer = 0.0
 			combo_changed.emit(combo_count)
 
 func reset_game() -> void:
@@ -142,6 +170,14 @@ func reset_game() -> void:
 	combo_count = 0
 	combo_timer = 0.0
 	wind_active = false
+	current_room = Room.LIVING_ROOM
+	coins = 0
+	chopped_logs = 0
+	current_tool = 0
+	chop_power = 1.0
+	sleep_bonus_active = false
+	sleep_cooldown = 0.0
+	story_stage = 0
 	# Don't reset: prestige_count, prestige_bonus, combo_best,
 	# achievements_unlocked, total_score_earned, wind_events_survived
 	combo_sequence.clear()
@@ -282,3 +318,42 @@ func _check_burn_achievements() -> void:
 		try_achievement("shopper")
 	if get_upgrade_count() >= 15:
 		try_achievement("all_upgrades")
+
+# ── Economy ──
+func buy_tool(tool_idx: int) -> bool:
+	if tool_idx <= current_tool or tool_idx >= tool_costs.size():
+		return false
+	if coins < tool_costs[tool_idx]:
+		return false
+	coins -= tool_costs[tool_idx]
+	current_tool = tool_idx
+	chop_power = tool_powers[tool_idx]
+	return true
+
+func sell_chopped_logs(amount: int) -> int:
+	var to_sell: int = mini(amount, chopped_logs)
+	if to_sell <= 0:
+		return 0
+	chopped_logs -= to_sell
+	var earned: int = to_sell * sell_price_per_log
+	coins += earned
+	return earned
+
+func can_sleep() -> bool:
+	return sleep_cooldown <= 0.0
+
+func do_sleep() -> void:
+	sleep_bonus_active = true
+	sleep_cooldown = SLEEP_COOLDOWN_MAX
+	# Sleep restores some fire and gives score
+	add_fire(2.0)
+	change_score(50)
+
+func get_story_text() -> String:
+	if story_stage < STORY_LINES.size():
+		return STORY_LINES[story_stage]
+	return STORY_LINES[STORY_LINES.size() - 1]
+
+func advance_story() -> void:
+	if story_stage < STORY_LINES.size() - 1:
+		story_stage += 1

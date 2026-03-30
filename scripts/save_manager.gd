@@ -63,6 +63,13 @@ func save_game() -> void:
 		"achievements_unlocked": GameManager.achievements_unlocked.duplicate(),
 		"total_score_earned": GameManager.total_score_earned,
 		"wind_events_survived": GameManager.wind_events_survived,
+		"current_room": GameManager.current_room,
+		"coins": GameManager.coins,
+		"chopped_logs": GameManager.chopped_logs,
+		"current_tool": GameManager.current_tool,
+		"chop_power": GameManager.chop_power,
+		"sleep_cooldown": GameManager.sleep_cooldown,
+		"story_stage": GameManager.story_stage,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -109,6 +116,13 @@ func load_game() -> bool:
 	GameManager.achievements_unlocked = d.get("achievements_unlocked", [])
 	GameManager.total_score_earned = d.get("total_score_earned", 0)
 	GameManager.wind_events_survived = d.get("wind_events_survived", 0)
+	GameManager.current_room = d.get("current_room", 0)
+	GameManager.coins = d.get("coins", 0)
+	GameManager.chopped_logs = d.get("chopped_logs", 0)
+	GameManager.current_tool = d.get("current_tool", 0)
+	GameManager.chop_power = d.get("chop_power", 1.0)
+	GameManager.sleep_cooldown = d.get("sleep_cooldown", 0.0)
+	GameManager.story_stage = d.get("story_stage", 0)
 	return true
 
 func delete_save() -> void:

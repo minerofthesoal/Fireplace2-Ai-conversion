@@ -25,7 +25,14 @@ const SCREEN_H := 480
 @onready var save_indicator: Label = $UI/SaveIndicator
 @onready var shop_btn: Button = $"UI/BottomBar/ShopBtn"
 @onready var pause_btn: Button = $"UI/BottomBar/PauseBtn"
+@onready var menu_btn: Button = $"UI/BottomBar/MenuBtn"
 @onready var spider_web: Node2D = $SpiderWeb
+@onready var nav_left: Button = $"UI/NavLeft"
+@onready var nav_right: Button = $"UI/NavRight"
+@onready var room_label: Label = $"UI/RoomLabel"
+@onready var coin_label: Label = $"UI/CoinLabel"
+@onready var story_panel: PanelContainer = $"UI/StoryPanel"
+@onready var story_label: Label = $"UI/StoryPanel/StoryLabel"
 
 var _endings: Node
 var _shop_open: bool = false
@@ -51,8 +58,9 @@ func _ready() -> void:
 	_endings.ending_complete.connect(_on_ending_complete)
 	add_child(_endings)
 
-	# Tutorial
+	# Tutorial — spider follows web
 	tutorial_node.set_speech_label(speech_label)
+	tutorial_node.set_spider_web(spider_web)
 
 	# Input signals
 	input_mgr.grab_requested.connect(_on_grab)
@@ -74,9 +82,13 @@ func _ready() -> void:
 	GameManager.achievement_earned.connect(_on_achievement_earned)
 	GameManager.combo_changed.connect(_on_combo_changed)
 
-	# UI button signals
+	# UI button signals — pause button must work while paused
+	$"UI/BottomBar".process_mode = Node.PROCESS_MODE_ALWAYS
 	shop_btn.pressed.connect(_on_shop_btn_pressed)
 	pause_btn.pressed.connect(_on_pause_btn_pressed)
+	menu_btn.pressed.connect(_on_menu_btn_pressed)
+	nav_left.pressed.connect(_on_nav_left)
+	nav_right.pressed.connect(_on_nav_right)
 
 	# Initialize UI
 	end_button.visible = false
@@ -86,6 +98,14 @@ func _ready() -> void:
 	combo_label.visible = false
 	wind_label.visible = false
 	save_indicator.visible = false
+	story_panel.visible = false
+	_update_room_label()
+	_update_coin_label()
+
+	# Show story intro on first play
+	if GameManager.story_stage == 0:
+		_show_story(GameManager.get_story_text())
+		GameManager.advance_story()
 
 	# Heat bar max
 	heat_bar.max_value = GameManager.get_fire_max()
@@ -125,6 +145,14 @@ func _process(delta: float) -> void:
 		_format_time(GameManager.game_time),
 		GameManager.combo_best,
 	]
+
+	# Sleep cooldown
+	if GameManager.sleep_cooldown > 0.0:
+		GameManager.sleep_cooldown -= delta
+	if GameManager.sleep_bonus_active and GameManager.sleep_cooldown <= 0.0:
+		GameManager.sleep_bonus_active = false
+
+	_update_coin_label()
 
 	# Tutorial
 	tutorial_node.check_interaction(cursor_pos)
@@ -391,6 +419,64 @@ func _flash_save() -> void:
 	_save_flash_tween.tween_interval(1.0)
 	_save_flash_tween.tween_property(save_indicator, "modulate", Color(1, 1, 1, 0), 0.5)
 	_save_flash_tween.tween_callback(func(): save_indicator.visible = false)
+
+func _on_menu_btn_pressed() -> void:
+	if _game_over_active:
+		return
+	SaveManager.save_game()
+	SaveManager.leave_game()
+	AudioManager.stop_music()
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+# ═══════════════════════════════════════════════════════════
+# ROOM NAVIGATION
+# ═══════════════════════════════════════════════════════════
+
+const ROOM_NAMES: Array[String] = ["Living Room", "Bedroom", "Outside"]
+
+func _on_nav_left() -> void:
+	if _shop_open or _game_over_active:
+		return
+	_navigate_room(-1)
+
+func _on_nav_right() -> void:
+	if _shop_open or _game_over_active:
+		return
+	_navigate_room(1)
+
+func _navigate_room(direction: int) -> void:
+	var new_room: int = GameManager.current_room + direction
+	if new_room < 0 or new_room > 2:
+		return
+	SaveManager.save_game()
+	GameManager.current_room = new_room
+	AudioManager.play_sfx("button_click")
+	match new_room:
+		GameManager.Room.LIVING_ROOM:
+			get_tree().change_scene_to_file("res://scenes/game.tscn")
+		GameManager.Room.BEDROOM:
+			get_tree().change_scene_to_file("res://scenes/bedroom.tscn")
+		GameManager.Room.OUTSIDE:
+			get_tree().change_scene_to_file("res://scenes/outside.tscn")
+
+func _update_room_label() -> void:
+	if room_label:
+		room_label.text = ROOM_NAMES[GameManager.current_room]
+
+func _update_coin_label() -> void:
+	if coin_label:
+		coin_label.text = "Coins: %d" % GameManager.coins
+
+func _show_story(text: String) -> void:
+	story_label.text = text
+	story_panel.visible = true
+	story_panel.modulate = Color(1, 1, 1, 0)
+	var tw := create_tween()
+	tw.tween_property(story_panel, "modulate", Color.WHITE, 0.5)
+	tw.tween_interval(4.0)
+	tw.tween_property(story_panel, "modulate", Color(1, 1, 1, 0), 1.0)
+	tw.tween_callback(func(): story_panel.visible = false)
 
 func _format_time(t: float) -> String:
 	var m: int = int(t) / 60
