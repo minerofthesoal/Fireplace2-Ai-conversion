@@ -6,7 +6,6 @@ extends Node2D
 signal grab_requested(cursor_pos: Vector2)
 signal release_requested(cursor_pos: Vector2)
 signal shop_requested
-signal end_button_pressed
 
 const DPAD_SPEED := 8.0
 const SCREEN_W := 640
@@ -57,13 +56,13 @@ func _process(_delta: float) -> void:
 	if not GameManager.use_dpad:
 		return
 	if Input.is_action_pressed("move_left"):
-		cursor.position.x = max(0, cursor.position.x - DPAD_SPEED)
+		cursor.position.x = maxf(0.0, cursor.position.x - DPAD_SPEED)
 	if Input.is_action_pressed("move_right"):
-		cursor.position.x = min(SCREEN_W, cursor.position.x + DPAD_SPEED)
+		cursor.position.x = minf(float(SCREEN_W), cursor.position.x + DPAD_SPEED)
 	if Input.is_action_pressed("move_up"):
-		cursor.position.y = max(0, cursor.position.y - DPAD_SPEED)
+		cursor.position.y = maxf(0.0, cursor.position.y - DPAD_SPEED)
 	if Input.is_action_pressed("move_down"):
-		cursor.position.y = min(SCREEN_H, cursor.position.y + DPAD_SPEED)
+		cursor.position.y = minf(float(SCREEN_H), cursor.position.y + DPAD_SPEED)
 
 func get_cursor_pos() -> Vector2:
 	return cursor.position

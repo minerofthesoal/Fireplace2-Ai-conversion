@@ -3,7 +3,6 @@ extends Node2D
 ## Fireplace 2 — Game Scene Controller
 ## Wires together all sub-systems.
 
-const SF := 4.0
 const SCREEN_W := 640
 const SCREEN_H := 480
 
@@ -13,16 +12,20 @@ const SCREEN_H := 480
 @onready var input_mgr: Node2D = $InputManager
 @onready var tutorial_node: Node2D = $Tutorial
 @onready var shop_ui: PanelContainer = $UI/ShopUI
-@onready var heat_bar: ProgressBar = $UI/HeatBar
-@onready var score_label: Label = $UI/ScoreLabel
-@onready var speech_label: Label = $UI/SpeechBubble
+@onready var heat_bar: ProgressBar = $"UI/TopBar/HBox/HeatBar"
+@onready var score_label: Label = $"UI/TopBar/HBox/ScoreLabel"
+@onready var stats_label: Label = $"UI/TopBar/HBox/StatsLabel"
+@onready var speech_bubble: PanelContainer = $"UI/SpeechBubble"
+@onready var speech_label: Label = $"UI/SpeechBubble/SpeechLabel"
 @onready var achievement_label: Label = $UI/AchievementLabel
 @onready var mode_label: Label = $UI/ModeLabel
 @onready var end_button: Sprite2D = $EndButton
-@onready var stats_label: Label = $UI/StatsLabel
 @onready var combo_label: Label = $UI/ComboLabel
 @onready var wind_label: Label = $UI/WindLabel
 @onready var save_indicator: Label = $UI/SaveIndicator
+@onready var shop_btn: Button = $"UI/BottomBar/ShopBtn"
+@onready var pause_btn: Button = $"UI/BottomBar/PauseBtn"
+@onready var spider_web: Node2D = $SpiderWeb
 
 var _endings: Node
 var _shop_open: bool = false
@@ -67,11 +70,15 @@ func _ready() -> void:
 	GameManager.achievement_earned.connect(_on_achievement_earned)
 	GameManager.combo_changed.connect(_on_combo_changed)
 
+	# UI button signals
+	shop_btn.pressed.connect(_on_shop_btn_pressed)
+	pause_btn.pressed.connect(_on_pause_btn_pressed)
+
 	# Initialize UI
 	end_button.visible = false
 	achievement_label.visible = false
 	mode_label.visible = false
-	speech_label.visible = false
+	speech_bubble.visible = false
 	combo_label.visible = false
 	wind_label.visible = false
 	save_indicator.visible = false
@@ -100,29 +107,44 @@ func _process(delta: float) -> void:
 	if GameManager.game_time >= 600.0:
 		GameManager.try_achievement("marathon")
 
-	# Cursor to log system
-	log_system.drag_to(input_mgr.get_cursor_pos())
+	# Cursor to log system and spider web
+	var cursor_pos: Vector2 = input_mgr.get_cursor_pos()
+	log_system.drag_to(cursor_pos)
+	spider_web.apply_cursor_force(cursor_pos)
 
 	# Update UI
 	heat_bar.max_value = GameManager.get_fire_max()
 	heat_bar.value = GameManager.fire_level
 	score_label.text = "Score: %d" % GameManager.score
-	stats_label.text = "Logs: %d  |  Time: %s  |  Best combo: %d" % [
+	stats_label.text = "Logs: %d | %s | Best: %dx" % [
 		GameManager.total_logs_burned,
 		_format_time(GameManager.game_time),
 		GameManager.combo_best,
 	]
 
 	# Tutorial
-	tutorial_node.check_interaction(input_mgr.get_cursor_pos())
+	tutorial_node.check_interaction(cursor_pos)
 
 	# End button at 1325
 	if GameManager.score >= 1325 and not GameManager.end_button_visible:
 		GameManager.end_button_visible = true
 		end_button.visible = true
-		end_button.texture = preload("res://assets/sprites/bigButtonPress0.png")
 		AudioManager.play_sfx("achievement")
 		_show_achievement("END AVAILABLE", "Click the button to finish")
+
+# ═══════════════════════════════════════════════════════════
+# UI BUTTONS
+# ═══════════════════════════════════════════════════════════
+
+func _on_shop_btn_pressed() -> void:
+	if not _shop_open and not _game_over_active:
+		_open_shop()
+
+func _on_pause_btn_pressed() -> void:
+	if _game_over_active:
+		return
+	get_tree().paused = not get_tree().paused
+	pause_btn.text = "Resume" if get_tree().paused else "Pause"
 
 # ═══════════════════════════════════════════════════════════
 # INPUT
@@ -138,14 +160,9 @@ func _on_release(cursor_pos: Vector2) -> void:
 		return
 	log_system.release_all()
 
-	# Shop click
-	if log_system.all_null() and cursor_pos.x < 40 * SF and cursor_pos.y > 100 * SF:
-		_open_shop()
-		return
-
 	# End button
 	if GameManager.end_button_visible and end_button.visible:
-		if cursor_pos.distance_to(end_button.position) < 30 * SF:
+		if cursor_pos.distance_to(end_button.position) < 50:
 			_press_end_button()
 
 func _on_shop_requested() -> void:
@@ -155,7 +172,6 @@ func _on_shop_requested() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_input_mode"):
 		_show_mode("D-Pad mode ON" if GameManager.use_dpad else "Mouse mode ON")
-	# Escape during gameplay = pause/shop
 	if event.is_action_pressed("ui_cancel") and not _shop_open and not _game_over_active:
 		_open_shop()
 
@@ -187,10 +203,9 @@ func _press_end_button() -> void:
 		return
 	_game_over_active = true
 	SaveManager.leave_game()
-	end_button.texture = preload("res://assets/sprites/bigButtonPress1.png")
 	AudioManager.play_sfx("button_click")
 	await get_tree().create_timer(0.15).timeout
-	Effects.fire_burst(self, Vector2(78, 56) * SF)
+	Effects.fire_burst(self, end_button.position)
 	_endings.trigger()
 
 func _on_ending_complete(won: bool, ending_name: String, final_score: int) -> void:
@@ -251,7 +266,6 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	stats.add_theme_font_size_override("font_size", 13)
 	result_vbox.add_child(stats)
 
-	# Achievements earned
 	if GameManager.achievements_unlocked.size() > 0:
 		var ach_lbl := Label.new()
 		ach_lbl.text = "Achievements: %d / %d" % [
@@ -277,6 +291,7 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	retry_btn.custom_minimum_size = Vector2(160, 44)
 	retry_btn.pressed.connect(func():
 		GameManager.reset_game()
+		get_tree().paused = false
 		get_tree().change_scene_to_file("res://scenes/game.tscn")
 	)
 	btn_row.add_child(retry_btn)
@@ -286,6 +301,7 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 	menu_btn.custom_minimum_size = Vector2(160, 44)
 	menu_btn.pressed.connect(func():
 		GameManager.reset_game()
+		get_tree().paused = false
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 	)
 	btn_row.add_child(menu_btn)
@@ -297,12 +313,14 @@ func _show_game_over(won: bool, ending_name: String, final_score: int) -> void:
 # ═══════════════════════════════════════════════════════════
 
 func _on_fire_died() -> void:
-	Effects.smoke_puff(self, Vector2(320, 320))
+	Effects.smoke_puff(self, Vector2(320, 300))
 
 func _on_wind_started() -> void:
 	wind_label.text = "WIND GUST!"
 	wind_label.visible = true
 	wind_label.modulate = Color(1, 1, 1, 1)
+	wind_label.add_theme_font_size_override("font_size", 22)
+	wind_label.add_theme_color_override("font_color", Color(0.7, 0.85, 1.0))
 
 func _on_wind_ended() -> void:
 	var tw := create_tween()
@@ -316,6 +334,8 @@ func _on_wind_ended() -> void:
 func _on_combo_changed(new_combo: int) -> void:
 	if new_combo >= 2:
 		combo_label.text = "COMBO x%d!" % new_combo
+		combo_label.add_theme_font_size_override("font_size", 20)
+		combo_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 		combo_label.visible = true
 		combo_label.modulate = Color(1, 1, 1, 1)
 		var tw := create_tween()
@@ -336,6 +356,8 @@ func _on_achievement_earned(id: String) -> void:
 
 func _show_achievement(title_text: String, desc: String) -> void:
 	achievement_label.text = "%s\n%s" % [title_text, desc]
+	achievement_label.add_theme_font_size_override("font_size", 18)
+	achievement_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
 	achievement_label.visible = true
 	achievement_label.modulate = Color(1, 1, 1, 0)
 	if _achievement_tween:

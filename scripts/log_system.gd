@@ -5,10 +5,15 @@ extends Node2D
 
 signal log_burned(pos: Vector2, was_big: bool)
 
-const SF := 4.0
 const SCREEN_W := 640
 const SCREEN_H := 480
-const Y_POSITIONS: Array[int] = [74, 58, 42]
+
+# Log spawn positions (left side of screen, stacked vertically)
+const SPAWN_POSITIONS: Array[Vector2] = [
+	Vector2(100, 200),
+	Vector2(100, 260),
+	Vector2(100, 320),
+]
 
 var log_slots: Array = [null, null, null]
 var log_grabbed: Array[bool] = [false, false, false]
@@ -17,7 +22,7 @@ var log_is_big: Array[bool] = [false, false, false]
 var _fire_zone: Rect2 = Rect2()
 var _auto_log_timer: float = 0.0
 const AUTO_LOG_INTERVAL: float = 8.0
-const MAGNET_RANGE: float = 80.0
+const MAGNET_RANGE: float = 100.0
 const MAGNET_SPEED: float = 200.0
 
 @onready var spawn_timer: Timer = $SpawnTimer
@@ -50,7 +55,7 @@ func drag_to(cursor_pos: Vector2) -> void:
 func try_grab(cursor_pos: Vector2) -> bool:
 	for i in range(3):
 		if log_slots[i] != null:
-			if log_slots[i].position.distance_to(cursor_pos) < 30.0 * SF:
+			if log_slots[i].position.distance_to(cursor_pos) < 40.0:
 				log_grabbed[i] = true
 				return true
 	return false
@@ -73,8 +78,14 @@ func spawn_log(is_big: bool) -> void:
 		return
 
 	var spr := Sprite2D.new()
-	spr.texture = preload("res://assets/sprites/BIGwood.png") if is_big else preload("res://assets/sprites/wood0.png")
-	spr.position = Vector2(134, Y_POSITIONS[slot]) * SF
+	if is_big:
+		spr.texture = preload("res://assets/sprites/BIGwood.png")
+		spr.scale = Vector2(2.5, 2.5)
+	else:
+		spr.texture = preload("res://assets/sprites/wood0.png")
+		spr.scale = Vector2(2.5, 2.5)
+	spr.position = SPAWN_POSITIONS[slot]
+	spr.centered = true
 	log_is_big[slot] = is_big
 	add_child(spr)
 	log_slots[slot] = spr
