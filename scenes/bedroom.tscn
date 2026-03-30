@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bedroom.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bedroom_bg.png" id="2"]
+
+[node name="Bedroom" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(320, 240)
+texture = ExtResource("2")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="PanelContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 120.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/Panel"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="UI/Panel/VBox"]
+layout_mode = 2
+text = "~ Bedroom ~"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="UI/Panel/VBox"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+
+[node name="SleepBtn" type="Button" parent="UI/Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+text = "Sleep"
+
+[node name="ComputerBtn" type="Button" parent="UI/Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+text = "Use Computer (Tool Shop)"
+
+[node name="NavLeft" type="Button" parent="UI"]
+offset_left = 10.0
+offset_top = 220.0
+offset_right = 50.0
+offset_bottom = 260.0
+text = "<"
+
+[node name="NavRight" type="Button" parent="UI"]
+offset_left = 590.0
+offset_top = 220.0
+offset_right = 630.0
+offset_bottom = 260.0
+text = ">"
+
+[node name="RoomLabel" type="Label" parent="UI"]
+offset_left = 220.0
+offset_top = 460.0
+offset_right = 420.0
+offset_bottom = 480.0
+text = "Bedroom"
+horizontal_alignment = 1
+
+[node name="CoinLabel" type="Label" parent="UI"]
+offset_left = 440.0
+offset_top = 460.0
+offset_right = 540.0
+offset_bottom = 480.0
+text = "Coins: 0"
+horizontal_alignment = 2
+
+[node name="ToolShopPanel" type="PanelContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -140.0
+offset_right = 150.0
+offset_bottom = 140.0
+visible = false

@@ -11,16 +11,24 @@ extends Control
 @onready var fire_decor: GPUParticles2D = $FireDecor
 @onready var prestige_label: Label = $VBox/PrestigeLabel
 @onready var achievements_label: Label = $VBox/AchievementsLabel
+@onready var story_intro: Label = $StoryIntro
 
 func _ready() -> void:
 	theme = ThemeBuilder.build()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
-	# Style title
-	title_label.add_theme_font_size_override("font_size", 36)
-	title_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
+	# Style title with warm fire colors
+	title_label.text = "FIREPLACE"
+	title_label.add_theme_font_size_override("font_size", 42)
+	title_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.2))
+	subtitle_label.text = "Keep the fire burning"
 	subtitle_label.add_theme_font_size_override("font_size", 16)
-	subtitle_label.add_theme_color_override("font_color", Color(0.8, 0.65, 0.45))
+	subtitle_label.add_theme_color_override("font_color", Color(0.85, 0.6, 0.35))
+
+	# Story intro text
+	story_intro.text = GameManager.get_story_text()
+	story_intro.add_theme_font_size_override("font_size", 13)
+	story_intro.add_theme_color_override("font_color", Color(0.7, 0.55, 0.4, 0.8))
 
 	# Show/hide continue button
 	if SaveManager.has_save():
@@ -61,6 +69,11 @@ func _ready() -> void:
 	# Load settings and start menu music
 	SaveManager.load_settings()
 	AudioManager.start_music()
+
+	# Animate title glow
+	var tw := create_tween().set_loops()
+	tw.tween_property(title_label, "modulate", Color(1.0, 0.85, 0.6), 2.0)
+	tw.tween_property(title_label, "modulate", Color(1.0, 1.0, 1.0), 2.0)
 
 func _on_new_game() -> void:
 	AudioManager.play_sfx("button_click")

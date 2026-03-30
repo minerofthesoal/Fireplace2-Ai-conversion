@@ -122,3 +122,9 @@ func _draw() -> void:
 	# Draw small dot at each joint
 	for i in range(points_pos.size()):
 		draw_circle(points_pos[i], 1.5, WEB_COLOR)
+
+func get_end_position() -> Vector2:
+	## Returns the global position of the last web point (where spider hangs).
+	if points_pos.size() > 0:
+		return global_position + points_pos[points_pos.size() - 1]
+	return global_position
