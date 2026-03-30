@@ -53,7 +53,7 @@ func _start_wind() -> void:
 	GameManager.wind_active = true
 	_wind_duration_timer = 0.0
 	wind_started.emit()
-	AudioManager.play_sfx("rain_start")
+	AudioManager.play_sfx("wind_gust")
 
 func _end_wind() -> void:
 	GameManager.wind_active = false

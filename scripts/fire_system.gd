@@ -87,6 +87,13 @@ func _ensure_fire_anim() -> void:
 
 func _on_spark_tick() -> void:
 	fire_particles.emitting = GameManager.fire_level > 0
+	# Adjust particle intensity based on fire level
+	var mat: ParticleProcessMaterial = fire_particles.process_material as ParticleProcessMaterial
+	if mat:
+		var intensity: float = clampf(GameManager.fire_level / GameManager.get_fire_max(), 0.0, 1.0)
+		mat.initial_velocity_min = 30.0 + intensity * 40.0
+		mat.initial_velocity_max = 80.0 + intensity * 60.0
+		fire_particles.amount = int(15 + intensity * 25)
 
 func get_fire_zone_rect() -> Rect2:
-	return Rect2(wall_zone.global_position - Vector2(32, 32), Vector2(64, 64))
+	return Rect2(wall_zone.global_position - Vector2(60, 30), Vector2(120, 60))

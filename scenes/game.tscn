@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=33 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/v2_background_0.png" id="2"]
@@ -14,6 +14,8 @@
 [ext_resource type="Script" path="res://scripts/input_manager.gd" id="12"]
 [ext_resource type="Script" path="res://scripts/tutorial.gd" id="13"]
 [ext_resource type="Script" path="res://scripts/shop_ui.gd" id="14"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spider_web.png" id="15"]
+[ext_resource type="Script" path="res://scripts/spider_web.gd" id="16"]
 [ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_000.png" id="20"]
 [ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_001.png" id="21"]
 [ext_resource type="Texture2D" path="res://assets/animations/fireplace/frame_002.png" id="22"]
@@ -47,7 +49,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"fireplace_normal",
-"speed": 2.5
+"speed": 4.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -73,29 +75,33 @@ animations = [{
 }],
 "loop": true,
 "name": &"fireplace_demon",
-"speed": 1.25
+"speed": 2.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
-size = Vector2(64, 64)
+size = Vector2(120, 60)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fire"]
 emission_shape = 1
-emission_sphere_radius = 15.0
+emission_sphere_radius = 24.0
 direction = Vector3(0, -1, 0)
-spread = 30.0
-initial_velocity_min = 20.0
-initial_velocity_max = 60.0
-gravity = Vector3(0, -40, 0)
-color = Color(1, 0.6, 0.1, 0.9)
+spread = 25.0
+initial_velocity_min = 30.0
+initial_velocity_max = 80.0
+gravity = Vector3(0, -50, 0)
+scale_min = 2.0
+scale_max = 4.0
+color = Color(1, 0.5, 0.1, 0.85)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_rain"]
-direction = Vector3(-0.3, 1, 0)
-spread = 10.0
-initial_velocity_min = 300.0
-initial_velocity_max = 500.0
-gravity = Vector3(0, 200, 0)
-color = Color(0.53, 0.95, 1, 0.7)
+direction = Vector3(-0.2, 1, 0)
+spread = 8.0
+initial_velocity_min = 400.0
+initial_velocity_max = 600.0
+gravity = Vector3(0, 300, 0)
+scale_min = 1.0
+scale_max = 2.0
+color = Color(0.4, 0.7, 1, 0.6)
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1")
@@ -106,13 +112,14 @@ texture = ExtResource("2")
 centered = true
 
 [node name="FireplaceBase" type="Sprite2D" parent="."]
-position = Vector2(328, 348)
+position = Vector2(320, 320)
+scale = Vector2(2.5, 2.5)
 texture = ExtResource("3")
 centered = true
 
 [node name="EndButton" type="Sprite2D" parent="."]
-position = Vector2(92, 204)
-scale = Vector2(0.375, 0.375)
+position = Vector2(80, 200)
+scale = Vector2(1.0, 1.0)
 texture = ExtResource("6")
 visible = false
 centered = true
@@ -121,30 +128,30 @@ centered = true
 script = ExtResource("9")
 
 [node name="FireplaceSprite" type="Sprite2D" parent="FireSystem"]
-position = Vector2(328, 368)
-scale = Vector2(1.32, 1.32)
+position = Vector2(320, 350)
+scale = Vector2(3.0, 3.0)
 texture = ExtResource("4")
 centered = true
 
 [node name="FireAnim" type="AnimatedSprite2D" parent="FireSystem"]
-position = Vector2(328, 328)
-scale = Vector2(1.69, 1.69)
+position = Vector2(320, 290)
+scale = Vector2(3.5, 3.5)
 sprite_frames = SubResource("SpriteFrames_fire")
 visible = false
 
 [node name="WallZone" type="Area2D" parent="FireSystem"]
-position = Vector2(320, 348)
+position = Vector2(320, 320)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FireSystem/WallZone"]
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="FireParticles" type="GPUParticles2D" parent="FireSystem"]
-position = Vector2(312, 328)
-amount = 15
+position = Vector2(320, 300)
+amount = 25
 lifetime = 0.8
 process_material = SubResource("ParticleProcessMaterial_fire")
 emitting = false
-visibility_rect = Rect2(-60, -100, 120, 120)
+visibility_rect = Rect2(-80, -120, 160, 140)
 
 [node name="DecayTimer" type="Timer" parent="FireSystem"]
 wait_time = 0.25
@@ -170,8 +177,8 @@ script = ExtResource("11")
 
 [node name="RainParticles" type="GPUParticles2D" parent="RainSystem"]
 position = Vector2(320, -20)
-amount = 80
-lifetime = 1.5
+amount = 100
+lifetime = 1.2
 process_material = SubResource("ParticleProcessMaterial_rain")
 emitting = false
 visibility_rect = Rect2(-400, -20, 800, 600)
@@ -184,79 +191,124 @@ autostart = false
 wait_time = 15.0
 autostart = false
 
+[node name="SpiderWeb" type="Node2D" parent="."]
+position = Vector2(540, 0)
+script = ExtResource("16")
+
+[node name="WebSprite" type="Sprite2D" parent="SpiderWeb"]
+position = Vector2(0, 64)
+scale = Vector2(2.0, 2.0)
+texture = ExtResource("15")
+centered = true
+
 [node name="Tutorial" type="Node2D" parent="."]
 script = ExtResource("13")
 
 [node name="SpiderSprite" type="Sprite2D" parent="Tutorial"]
-position = Vector2(188, 132)
-scale = Vector2(0.75, 0.75)
+position = Vector2(540, 140)
+scale = Vector2(2.0, 2.0)
 texture = ExtResource("7")
 centered = true
 
 [node name="TempIcon" type="Sprite2D" parent="Tutorial"]
-position = Vector2(188, 132)
-scale = Vector2(0.75, 0.75)
+position = Vector2(540, 140)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("8")
 centered = true
+visible = false
 
 [node name="InputManager" type="Node2D" parent="."]
 script = ExtResource("12")
 
 [node name="Cursor" type="Sprite2D" parent="InputManager"]
 position = Vector2(320, 240)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("5")
 centered = true
 z_index = 90
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="HeatBar" type="ProgressBar" parent="UI"]
-offset_left = 20.0
-offset_top = 8.0
-offset_right = 140.0
-offset_bottom = 32.0
+[node name="TopBar" type="PanelContainer" parent="UI"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 640.0
+offset_bottom = 60.0
+
+[node name="HBox" type="HBoxContainer" parent="UI/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeatLabel" type="Label" parent="UI/TopBar/HBox"]
+layout_mode = 2
+text = "Fire:"
+
+[node name="HeatBar" type="ProgressBar" parent="UI/TopBar/HBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 24)
 max_value = 5.0
 value = 0.0
 show_percentage = false
 
-[node name="HeatLabel" type="Label" parent="UI"]
-offset_left = 8.0
-offset_top = 10.0
-offset_right = 20.0
-offset_bottom = 30.0
-text = "H"
-
-[node name="ScoreLabel" type="Label" parent="UI"]
-offset_left = 20.0
-offset_top = 36.0
-offset_right = 200.0
-offset_bottom = 56.0
+[node name="ScoreLabel" type="Label" parent="UI/TopBar/HBox"]
+layout_mode = 2
 text = "Score: 0"
 
-[node name="StatsLabel" type="Label" parent="UI"]
-offset_left = 400.0
-offset_top = 8.0
-offset_right = 635.0
-offset_bottom = 28.0
+[node name="StatsLabel" type="Label" parent="UI/TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = ""
 horizontal_alignment = 2
 
-[node name="SpeechBubble" type="Label" parent="UI"]
-offset_left = 40.0
-offset_top = 380.0
-offset_right = 600.0
-offset_bottom = 460.0
+[node name="BottomBar" type="HBoxContainer" parent="UI"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
+theme_override_constants/separation = 10
+
+[node name="ShopBtn" type="Button" parent="UI/BottomBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 40)
+text = "Shop (B)"
+
+[node name="PauseBtn" type="Button" parent="UI/BottomBar"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 40)
+text = "Pause"
+
+[node name="ControlsHint" type="Label" parent="UI/BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Drag logs to fire  |  T = Toggle D-Pad"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SpeechBubble" type="PanelContainer" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -120.0
+offset_right = 200.0
+offset_bottom = -55.0
+visible = false
+
+[node name="SpeechLabel" type="Label" parent="UI/SpeechBubble"]
+layout_mode = 2
 text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
-visible = false
 
 [node name="AchievementLabel" type="Label" parent="UI"]
-offset_left = 180.0
-offset_top = 60.0
-offset_right = 460.0
-offset_bottom = 120.0
+offset_left = 170.0
+offset_top = 65.0
+offset_right = 470.0
+offset_bottom = 110.0
 text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -264,9 +316,9 @@ visible = false
 
 [node name="ModeLabel" type="Label" parent="UI"]
 offset_left = 220.0
-offset_top = 8.0
+offset_top = 65.0
 offset_right = 420.0
-offset_bottom = 32.0
+offset_bottom = 85.0
 text = ""
 horizontal_alignment = 1
 visible = false
@@ -280,43 +332,28 @@ visible = false
 script = ExtResource("14")
 
 [node name="ComboLabel" type="Label" parent="UI"]
-offset_left = 250.0
-offset_top = 36.0
-offset_right = 400.0
-offset_bottom = 56.0
+offset_left = 200.0
+offset_top = 115.0
+offset_right = 440.0
+offset_bottom = 140.0
 text = ""
 horizontal_alignment = 1
 visible = false
 
 [node name="WindLabel" type="Label" parent="UI"]
-offset_left = 250.0
-offset_top = 130.0
-offset_right = 400.0
-offset_bottom = 155.0
+offset_left = 230.0
+offset_top = 140.0
+offset_right = 410.0
+offset_bottom = 165.0
 text = "WIND GUST!"
 horizontal_alignment = 1
 visible = false
 
 [node name="SaveIndicator" type="Label" parent="UI"]
-offset_left = 550.0
-offset_top = 36.0
+offset_left = 540.0
+offset_top = 65.0
 offset_right = 635.0
-offset_bottom = 56.0
+offset_bottom = 85.0
 text = "Saved"
 horizontal_alignment = 2
 visible = false
-
-[node name="ShopHint" type="Label" parent="UI"]
-offset_left = 10.0
-offset_top = 452.0
-offset_right = 300.0
-offset_bottom = 475.0
-text = "Click bottom-left (no logs) or B/Esc for Shop"
-
-[node name="ControlsHint" type="Label" parent="UI"]
-offset_left = 340.0
-offset_top = 452.0
-offset_right = 635.0
-offset_bottom = 475.0
-text = "T=Toggle D-Pad | Drag logs to fire"
-horizontal_alignment = 2
